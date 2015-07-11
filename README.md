@@ -2,6 +2,8 @@
 diff and patch for folder hives.
 This is a fork of filecmp python standard library.
 
+Functions added: report_patch, report_full_closure_patch, dump_hive_diff and demolocal
+
 ## Features
 * Compare two folder hives (hive1, hive2)
 * Create a config file (hivepatch.ini) showing the changes in old and new
