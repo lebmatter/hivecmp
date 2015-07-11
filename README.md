@@ -13,7 +13,14 @@ This is a fork of filecmp python standard library.
 * hivecmp as a subclass of filecmp
 * and more
 
-### hivepatch.ini example
+### hivepatch.ini
+
+* This file has 3 sections Root, New, Old
+* Root: shows old (hive1) and new (hive2) folder names
+* New: shows files and folders ONLY IN new folder (hive2)
+* Old: shows files and folders ONLY IN old folder (hive1)
+
+
 ```
 [Root]
 old = hive1
