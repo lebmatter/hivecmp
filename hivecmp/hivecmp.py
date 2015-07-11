@@ -1,7 +1,7 @@
 """Utilities for comparing files and directories.
 
 Classes:
-    dircmp
+    hivecmp
 
 Functions:
     cmp(f1, f2, shallow=1) -> int
@@ -13,7 +13,7 @@ import os
 import stat
 from itertools import ifilter, ifilterfalse, imap, izip
 
-__all__ = ["cmp","dircmp","cmpfiles"]
+__all__ = ["cmp","hivecmp","cmpfiles"]
 
 _cache = {}
 BUFSIZE=8*1024
@@ -74,10 +74,10 @@ def _do_cmp(f1, f2):
 
 # Directory comparison class.
 #
-class dircmp:
+class hivecmp:
     """A class that manages the comparison of 2 directories.
 
-    dircmp(a,b,ignore=None,hide=None)
+    hivecmp(a,b,ignore=None,hide=None)
       A and B are directories.
       IGNORE is a list of names to ignore,
         defaults to ['RCS', 'CVS', 'tags'].
@@ -85,7 +85,7 @@ class dircmp:
         defaults to [os.curdir, os.pardir].
 
     High level usage:
-      x = dircmp(dir1, dir2)
+      x = hivecmp(dir1, dir2)
       x.report() -> prints a report on the differences between dir1 and dir2
        or
       x.report_partial_closure() -> prints report on differences between dir1
@@ -105,7 +105,7 @@ class dircmp:
      same_files: list of identical files.
      diff_files: list of filenames which differ.
      funny_files: list of files which could not be compared.
-     subdirs: a dictionary of dircmp objects, keyed by names in common_dirs.
+     subdirs: a dictionary of hivecmp objects, keyed by names in common_dirs.
      """
 
     def __init__(self, a, b, ignore=None, hide=None): # Initialize
@@ -175,14 +175,14 @@ class dircmp:
         self.same_files, self.diff_files, self.funny_files = xx
 
     def phase4(self): # Find out differences between common subdirectories
-        # A new dircmp object is created for each common subdirectory,
+        # A new hivecmp object is created for each common subdirectory,
         # these are stored in a dictionary indexed by filename.
         # The hide and ignore properties are inherited from the parent
         self.subdirs = {}
         for x in self.common_dirs:
             a_x = os.path.join(self.left, x)
             b_x = os.path.join(self.right, x)
-            self.subdirs[x]  = dircmp(a_x, b_x, self.ignore, self.hide)
+            self.subdirs[x]  = hivecmp(a_x, b_x, self.ignore, self.hide)
 
     def phase4_closure(self): # Recursively call phase4() on subdirectories
         self.phase4()
@@ -286,7 +286,7 @@ def demo():
     options, args = getopt.getopt(sys.argv[1:], 'r')
     if len(args) != 2:
         raise getopt.GetoptError('need exactly two args', None)
-    dd = dircmp(args[0], args[1])
+    dd = hivecmp(args[0], args[1])
     if ('-r', '') in options:
         dd.report_full_closure()
     else:
