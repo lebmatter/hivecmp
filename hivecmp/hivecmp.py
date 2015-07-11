@@ -265,6 +265,13 @@ class hivecmp:
         patch_file.close()
 
 
+    def report_full_closure_patch(self): # Report on self and subdirs recursively
+        print self
+        self.report_patch()
+        for sd in self.subdirs.itervalues():
+            print sd
+            sd.report_full_closure_patch()
+
 
     methodmap = dict(subdirs=phase4,
                      same_files=phase3, diff_files=phase3, funny_files=phase3,
