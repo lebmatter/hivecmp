@@ -230,6 +230,16 @@ class hivecmp:
     ######################################
     ### Custom functions below
     ### report_patch, report_full_closure_patch, dump_hive_diff
+    ### A hivepatch.ini will be created. Example below 
+    ######################################
+    # [Only]
+    # hive2 = ['f3']
+    # hive1/f1 = ['file2.txt']
+    # hive2/f2 = ['d1', 'file5.py']
+
+    # [Root]
+    # old = hive1
+    # new = hive2
     ######################################
 
     def report_patch(self):
@@ -239,14 +249,13 @@ class hivecmp:
         if os.path.isfile(path_file_name):
             Config.read(path_file_name)
 
-        # patch_file = open(path_file_name,'a')
-        # Output format is purposely lousy
-        # print 'diff', self.left, self.right
+        #[Root] section to show names of old and new folders
         if not Config.has_section("Root"):
             Config.add_section("Root")
             Config.set('Root','old',self.left)
             Config.set('Root','new',self.right)
 
+        #[Only] section shows inserted/deleted files
         if self.left_only:
             self.left_only.sort()
             print 'Only in', self.left, ':', self.left_only
@@ -285,6 +294,7 @@ class hivecmp:
             print "Hivepatch file doesn't exist!\
             Please run report_full_closure_patch to make one."
             return
+
 
     methodmap = dict(subdirs=phase4,
                      same_files=phase3, diff_files=phase3, funny_files=phase3,
@@ -351,6 +361,16 @@ def demo():
         dd.report_full_closure()
     else:
         dd.report()
+
+
+# This is a demo function for hive diff
+# This one uses test_hives folders
+
+def demolocal():
+    os.chdir('../test_hives/')
+    d = hivecmp('hive1','hive2')
+    d.report_full_closure_patch()
+    d.dump_hive_diff()
 
 if __name__ == '__main__':
     demo()
