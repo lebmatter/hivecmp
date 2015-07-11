@@ -273,6 +273,19 @@ class hivecmp:
             sd.report_full_closure_patch()
 
 
+    def dump_hive_diff(self): # Report on self and subdirs recursively
+        path_file_name = "hivepatch.ini"
+
+        if os.path.isfile(path_file_name):
+            Config = ConfigParser.ConfigParser()
+            Config.read(path_file_name)
+            os.mkdir(Config.get('Root','new')+'-'+Config.get('Root','old'))
+
+        else:
+            print "Hivepatch file doesn't exist!\
+            Please run report_full_closure_patch to make one."
+            return
+
     methodmap = dict(subdirs=phase4,
                      same_files=phase3, diff_files=phase3, funny_files=phase3,
                      common_dirs = phase2, common_files=phase2, common_funny=phase2,
