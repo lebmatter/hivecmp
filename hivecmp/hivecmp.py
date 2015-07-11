@@ -13,6 +13,7 @@ import os
 import stat
 from itertools import ifilter, ifilterfalse, imap, izip
 import ConfigParser
+import shutil
 
 __all__ = ["cmp","hivecmp","cmpfiles"]
 
@@ -288,7 +289,10 @@ class hivecmp:
         if os.path.isfile(path_file_name):
             Config = ConfigParser.ConfigParser()
             Config.read(path_file_name)
-            os.mkdir(Config.get('Root','new')+'-'+Config.get('Root','old'))
+            diff_dir = Config.get('Root','new')+'-'+Config.get('Root','old')
+            if os.path.exists(diff_dir):
+                shutil.rmtree(diff_dir)
+            os.mkdir(diff_dir)
 
         else:
             print "Hivepatch file doesn't exist!\
