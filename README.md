@@ -14,7 +14,7 @@ This is a fork of filecmp python standard library.
 * and more
 
 ### hivepatch.ini example
-'''
+```
 [Root]
 old = hive1
 new = hive2
@@ -26,13 +26,13 @@ hive2/f2 = ['d1', 'file5.py']
 
 [Old]
 hive1/f1 = ['file2.txt']
-'''
+```
 
 ## How to use
-'''
+```
 clone repo
 open python interpreter.
 cd to hivecmp
 import hivecmp
 hivecmp.demolocal()
-'''
+```
