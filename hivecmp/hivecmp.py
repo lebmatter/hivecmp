@@ -1,4 +1,5 @@
 """Utilities for comparing files and directories.
+Forked from filecmp.py Python library
 
 Classes:
     hivecmp
@@ -301,9 +302,6 @@ class hivecmp:
             if os.path.exists(diff_dir):
                 shutil.rmtree(diff_dir)
             os.mkdir(diff_dir)
-            # os.chdir(diff_dir)
-            # os.mkdir(new)
-            # os.mkdir(old)
 
             #Copy new files with folder architecture to diff folder
             for i in Config.items('New'):
@@ -316,11 +314,10 @@ class hivecmp:
                     else:
                         shutil.copy2(folder+'/'+s, diff_dir+'/'+folder)
 
-
-        # else:
-        #     print "Hivepatch file doesn't exist!\
-        #     Please run report_full_closure_patch to make one."
-        #     return
+    ######################################
+    ### Custom functions end
+    ### report_patch, report_full_closure_patch, dump_hive_diff
+    ######################################
 
 
     methodmap = dict(subdirs=phase4,
@@ -392,7 +389,6 @@ def demo():
 
 # This is a demo function for hive diff
 # This one uses test_hives folders
-
 def demolocal():
     os.chdir('../test_hives/')
     d = hivecmp('hive1','hive2')
