@@ -12,6 +12,7 @@ Functions:
 import os
 import stat
 from itertools import ifilter, ifilterfalse, imap, izip
+import ConfigParser
 
 __all__ = ["cmp","hivecmp","cmpfiles"]
 
@@ -225,6 +226,45 @@ class hivecmp:
         for sd in self.subdirs.itervalues():
             print
             sd.report_full_closure()
+
+    ######################################
+    ### Custom functions below
+    ### report_patch, report_full_closure_patch, dump_hive_diff
+    ######################################
+
+    def report_patch(self):
+        path_file_name = "hivepatch.ini"
+        Config = ConfigParser.ConfigParser()
+        
+        if os.path.isfile(path_file_name):
+            Config.read(path_file_name)
+
+        # patch_file = open(path_file_name,'a')
+        # Output format is purposely lousy
+        # print 'diff', self.left, self.right
+        if not Config.has_section("Root"):
+            Config.add_section("Root")
+            Config.set('Root','old',self.left)
+            Config.set('Root','new',self.right)
+
+        if self.left_only:
+            self.left_only.sort()
+            print 'Only in', self.left, ':', self.left_only
+            if not Config.has_section("Only"):
+                Config.add_section("Only")
+            Config.set('Only',self.left,self.left_only)
+        if self.right_only:
+            self.right_only.sort()
+            print 'Only in', self.right, ':', self.right_only
+            if not Config.has_section("Only"):
+                Config.add_section("Only")
+            Config.set('Only',self.right,self.right_only)
+
+        patch_file = open(path_file_name,'w')
+        Config.write(patch_file)
+        patch_file.close()
+
+
 
     methodmap = dict(subdirs=phase4,
                      same_files=phase3, diff_files=phase3, funny_files=phase3,
