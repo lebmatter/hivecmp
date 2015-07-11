@@ -14,6 +14,7 @@ import stat
 from itertools import ifilter, ifilterfalse, imap, izip
 import ConfigParser
 import shutil
+from ast import literal_eval
 
 __all__ = ["cmp","hivecmp","cmpfiles"]
 
@@ -233,14 +234,17 @@ class hivecmp:
     ### report_patch, report_full_closure_patch, dump_hive_diff
     ### A hivepatch.ini will be created. Example below 
     ######################################
-    # [Only]
-    # hive2 = ['f3']
-    # hive1/f1 = ['file2.txt']
-    # hive2/f2 = ['d1', 'file5.py']
-
     # [Root]
     # old = hive1
     # new = hive2
+
+    # [New]
+    # hive2 = ['f3']
+    # hive2/f1/f1a = ['fladoc.txt']
+    # hive2/f2 = ['d1', 'file5.py']
+
+    # [Old]
+    # hive1/f1 = ['file2.txt']
     ######################################
 
     def report_patch(self):
@@ -260,15 +264,15 @@ class hivecmp:
         if self.left_only:
             self.left_only.sort()
             print 'Only in', self.left, ':', self.left_only
-            if not Config.has_section("Only"):
-                Config.add_section("Only")
-            Config.set('Only',self.left,self.left_only)
+            if not Config.has_section("Old"):
+                Config.add_section("Old")
+            Config.set('Old',self.left,self.left_only)
         if self.right_only:
             self.right_only.sort()
             print 'Only in', self.right, ':', self.right_only
-            if not Config.has_section("Only"):
-                Config.add_section("Only")
-            Config.set('Only',self.right,self.right_only)
+            if not Config.has_section("New"):
+                Config.add_section("New")
+            Config.set('New',self.right,self.right_only)
 
         patch_file = open(path_file_name,'w')
         Config.write(patch_file)
@@ -289,15 +293,25 @@ class hivecmp:
         if os.path.isfile(path_file_name):
             Config = ConfigParser.ConfigParser()
             Config.read(path_file_name)
-            diff_dir = Config.get('Root','new')+'-'+Config.get('Root','old')
+            old = Config.get('Root','old')
+            new = Config.get('Root','new')
+            diff_dir = new+'-'+old
+            
+            #create new-old diff file
             if os.path.exists(diff_dir):
                 shutil.rmtree(diff_dir)
             os.mkdir(diff_dir)
+            os.chdir(diff_dir)
+            os.mkdir(new)
+            os.mkdir(old)
 
-        else:
-            print "Hivepatch file doesn't exist!\
-            Please run report_full_closure_patch to make one."
-            return
+            # for item in Config.items('Only'):
+            #     if not os.path.isdir((item[0])):
+            #         os.makedirs((item[0])
+        # else:
+        #     print "Hivepatch file doesn't exist!\
+        #     Please run report_full_closure_patch to make one."
+        #     return
 
 
     methodmap = dict(subdirs=phase4,
@@ -374,7 +388,7 @@ def demolocal():
     os.chdir('../test_hives/')
     d = hivecmp('hive1','hive2')
     d.report_full_closure_patch()
-    d.dump_hive_diff()
+    # d.dump_hive_diff()
 
 if __name__ == '__main__':
     demo()
