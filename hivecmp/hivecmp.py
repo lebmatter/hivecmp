@@ -301,13 +301,22 @@ class hivecmp:
             if os.path.exists(diff_dir):
                 shutil.rmtree(diff_dir)
             os.mkdir(diff_dir)
-            os.chdir(diff_dir)
-            os.mkdir(new)
-            os.mkdir(old)
+            # os.chdir(diff_dir)
+            # os.mkdir(new)
+            # os.mkdir(old)
 
-            # for item in Config.items('Only'):
-            #     if not os.path.isdir((item[0])):
-            #         os.makedirs((item[0])
+            #Copy new files with folder architecture to diff folder
+            for i in Config.items('New'):
+                folder = i[0]
+                os.makedirs(diff_dir+'/'+folder)
+                items = literal_eval(i[1])
+                for s in items:
+                    if os.path.isdir(folder+'/'+s):
+                        os.makedirs(diff_dir+'/'+folder+'/'+s)
+                    else:
+                        shutil.copy2(folder+'/'+s, diff_dir+'/'+folder)
+
+
         # else:
         #     print "Hivepatch file doesn't exist!\
         #     Please run report_full_closure_patch to make one."
@@ -388,7 +397,7 @@ def demolocal():
     os.chdir('../test_hives/')
     d = hivecmp('hive1','hive2')
     d.report_full_closure_patch()
-    # d.dump_hive_diff()
+    d.dump_hive_diff()
 
 if __name__ == '__main__':
     demo()
