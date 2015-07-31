@@ -248,52 +248,61 @@ class hivecmp:
     # hive1/f1 = ['file2.txt']
     ######################################
 
-    def report_patch(self):
-        path_file_name = "hivepatch.ini"
+    def report_patch(self,output_file_name):
+        output_file_name = output_file_name
         Config = ConfigParser.ConfigParser()
-        
-        if os.path.isfile(path_file_name):
-            Config.read(path_file_name)
+
+        # self.left = os.path.splitdrive(self.left)[1].replace('/','\\')
+        # self.right = os.path.splitdrive(self.right)[1].replace('/','\\')
+
+        sanitized_left = os.path.splitdrive(self.left)[1].replace('/','\\')
+        sanitized_right = os.path.splitdrive(self.right)[1].replace('/','\\')
+        drive = os.path.splitdrive(self.right)[0]
+        # print sanitized_left
+        # print sanitized_right
+
+        if os.path.isfile(output_file_name):
+            Config.read(output_file_name)
 
         #[Root] section to show names of old and new folders
         if not Config.has_section("Root"):
             Config.add_section("Root")
-            Config.set('Root','old',self.left)
-            Config.set('Root','new',self.right)
+            Config.set('Root','old',sanitized_left)
+            Config.set('Root','new',sanitized_right)
+            Config.set('Root','drive',drive)
 
         #[Only] section shows inserted/deleted files
         if self.left_only:
             self.left_only.sort()
-            print 'Only in', self.left, ':', self.left_only
+            # print 'Only in',sanitized_left, ':', self.left_only
             if not Config.has_section("Old"):
                 Config.add_section("Old")
-            Config.set('Old',self.left,self.left_only)
+            Config.set('Old',sanitized_left,self.left_only)
         if self.right_only:
             self.right_only.sort()
-            print 'Only in', self.right, ':', self.right_only
+            # print 'Only in', sanitized_right, ':', self.right_only
             if not Config.has_section("New"):
                 Config.add_section("New")
-            Config.set('New',self.right,self.right_only)
+            Config.set('New',sanitized_right,self.right_only)
 
-        patch_file = open(path_file_name,'w')
+        patch_file = open(output_file_name,'w')
         Config.write(patch_file)
         patch_file.close()
 
 
-    def report_full_closure_patch(self): # Report on self and subdirs recursively
-        print self
-        self.report_patch()
+    def report_full_closure_patch(self, output_file_name): # Report on self and subdirs recursively
+        self.report_patch(output_file_name)
         for sd in self.subdirs.itervalues():
-            print sd
-            sd.report_full_closure_patch()
+            # print sd
+            sd.report_full_closure_patch(output_file_name)
 
 
     def dump_hive_diff(self): # Report on self and subdirs recursively
-        path_file_name = "hivepatch.ini"
+        output_file_name = "hivepatch.ini"
 
-        if os.path.isfile(path_file_name):
+        if os.path.isfile(output_file_name):
             Config = ConfigParser.ConfigParser()
-            Config.read(path_file_name)
+            Config.read(output_file_name)
             old = Config.get('Root','old')
             new = Config.get('Root','new')
             diff_dir = new+'-'+old
@@ -390,8 +399,8 @@ def demo():
 # This is a demo function for hive diff
 # This one uses test_hives folders
 def demolocal():
-    os.chdir('../test_hives/')
-    d = hivecmp('hive1','hive2')
+    os.chdir('test_hives/')
+    d = hivecmp('\\mtvfsqbscm\build\PatchAutomation\PAScripts\test_hives\hive1','\\mtvfsqbscm\build\PatchAutomation\PAScripts\test_hives\hive2')
     d.report_full_closure_patch()
     d.dump_hive_diff()
 
