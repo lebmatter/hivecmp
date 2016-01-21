@@ -16,6 +16,7 @@ from itertools import ifilter, ifilterfalse, imap, izip
 import ConfigParser
 import shutil
 from ast import literal_eval
+import sys
 
 __all__ = ["cmp","hivecmp","cmpfiles"]
 
@@ -233,7 +234,7 @@ class hivecmp:
     ######################################
     ### Custom functions below
     ### report_patch, report_full_closure_patch, dump_hive_diff
-    ### A hivepatch.ini will be created. Example below 
+    ### A hivepatch.ini will be created. Example below
     ######################################
     # [Root]
     # old = hive1
@@ -306,7 +307,7 @@ class hivecmp:
             old = Config.get('Root','old')
             new = Config.get('Root','new')
             diff_dir = new+'-'+old
-            
+
             #create new-old diff file
             if os.path.exists(diff_dir):
                 shutil.rmtree(diff_dir)
@@ -399,10 +400,14 @@ def demo():
 # This is a demo function for hive diff
 # This one uses test_hives folders
 def demolocal():
-    os.chdir('test_hives/')
-    d = hivecmp('\\mtvfsqbscm\build\PatchAutomation\PAScripts\test_hives\hive1','\\mtvfsqbscm\build\PatchAutomation\PAScripts\test_hives\hive2')
-    d.report_full_closure_patch()
+    base_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    test_dir = os.path.join(base_dir, 'test_hives')
+    hive1 = os.path.join(test_dir, 'hive1')
+    hive2 = os.path.join(test_dir, 'hive2')
+    d = hivecmp(hive1, hive2)
+    out_file = os.path.join(test_dir, 'example_outfile.txt')
+    d.report_full_closure_patch(out_file)
     d.dump_hive_diff()
 
 if __name__ == '__main__':
-    demo()
+    demolocal()
